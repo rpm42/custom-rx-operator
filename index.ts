@@ -30,8 +30,14 @@ function allowedStates<Irp>(currentState: S, allowedStates: S[]): MonoTypeOperat
   )
 }
 
+function assert<T>(expr: boolean, message: string): MonoTypeOperatorFunction<T> {
+  return pipe(concatMap((v: T) => (expr ? of(v) : throwError(new Error(message)))))
+}
+
+const statteIn = (s: S, ss: S[]) => ss.indexOf(s) !== -1
+
 const source = of(irp).pipe(
-  allowedStates(state, [S.STATE_1]),
+  assert(statteIn(state, [S.STATE_3]), 'invalid action for state'),
   mapTo(S.STATE_2),
   catchError(e => {
     console.log('catchError', e.message)
